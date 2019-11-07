@@ -1,17 +1,18 @@
-HOST_DB = 'localhost'
+HOST_DB = '127.0.0.1'
 NAME_DB = 'den'
-USER_DB = 'root'
-PASS_DB = 'root'
-API_SUCCESS = 200
-API_ERROR = 400
+USER_DB = 'admin'
+PASS_DB = 'admin'
+
 FLASK_HOST = '0.0.0.0'
 FLASK_PORT = 5050
+
+API_SUCCESS = 200
+API_ERROR = 400
 
 branch = ['area_id',
           'hash_tags']
 
-student = ['address',
-           'date_of_birth',
+student = ['id',
            'friends']
 
 action = ["student_id", "branch_id",
@@ -29,3 +30,19 @@ action = ["student_id", "branch_id",
           "number_review_like",
           "number_review_rate",
           "number_time_study"]
+
+score_action = [7,
+                1,
+                3,
+                5,
+                5,
+                7,
+                1,
+                3,
+                5,
+                7,
+                1,
+                3,
+                5,
+                7
+                ]

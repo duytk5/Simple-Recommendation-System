@@ -2,43 +2,59 @@ import config
 import mysql.connector
 import tensorrec
 from scipy.special import softmax
+from data import Data
 
 
 class Module:
     def __init__(self):
-        # self.connection = mysql.connector.connect(host=config.HOST_DB,
-        #                                           database=config.NAME_DB,
-        #                                           user=config.USER_DB,
-        #                                           password=config.PASS_DB)
-
         self.model = tensorrec.TensorRec()
-        self.get_data()
-
-    def get_data(self):
-        interactions, user_features, item_features = tensorrec.util.generate_dummy_data(
-            num_users=1000,
-            num_items=20,
-            interaction_density=.05,
-            num_item_features=10,
-            num_user_features=10,
-            n_features_per_user=10,
-            n_features_per_item=10
-        )
-        self.interactions, self.user_features, self.item_features = interactions, user_features, item_features
-
-    def fit(self, epochs=1000):
-        self.get_data()
-        self.model.fit(self.interactions, self.user_features, self.item_features, epochs=epochs, verbose=True)
-        pass
-
-    def update(self):
         self.fit()
-        return True
+
+    def select_data(self):
+        self.connection = mysql.connector.connect(host=config.HOST_DB,
+                                                  database=config.NAME_DB,
+                                                  user=config.USER_DB,
+                                                  password=config.PASS_DB)
+        cur = self.connection.cursor()
+        cur.execute(("SELECT id, friends FROM student"))
+        students = cur.fetchall()
+
+        cur.execute(("SELECT id, area_id, hash_tags FROM branch"))
+        branches = cur.fetchall()
+
+        cur.execute(("SELECT * FROM statistic"))
+        actives = cur.fetchall()
+
+        # print (students)
+        # print (branches)
+        # print (actives)
+        cur.close()
+        self.data = Data(students, branches, actives)
+        self.users, self.branches, self.actions = self.data.get_data()
+
+    def fit(self, epochs=100):
+        self.select_data()
+        self.model.fit(self.actions, self.users, self.branches, epochs=epochs, verbose=True)
+        print ("FIT successful!")
 
     def get_all(self):
-        predictions = self.model.predict(user_features=self.user_features,
-                                         item_features=self.item_features)
+        predictions = self.model.predict(user_features=self.users,
+                                         item_features=self.branches)
         result = []
         for x in predictions:
-            result.append(softmax(x))
+            result.append(list(softmax(x)))
         return result
+
+    def update(self):
+        try:
+            self.fit()
+            matrix = self.get_all()
+            cur = self.connection.cursor()
+            query = (
+                ""
+            )
+            cur.execute(query)
+            cur.close()
+        except:
+            raise Exception("oh shit! error!")
+        return matrix

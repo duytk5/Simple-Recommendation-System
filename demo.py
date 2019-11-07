@@ -8,19 +8,21 @@ model = tensorrec.TensorRec()
 
 # Generate some dummy data
 interactions, user_features, item_features = tensorrec.util.generate_dummy_data(
-    num_users=1000,
-    num_items=20,
+    num_users=30,
+    num_items=3,
     interaction_density=.05,
-    num_item_features=10,
-    num_user_features=10,
-    n_features_per_user=10,
-    n_features_per_item=10
+    num_item_features=15,
+    num_user_features=1,
+    n_features_per_user=1,
+    n_features_per_item=15
 )
 
 # print(interactions)
 # print(user_features.toarray()[0])
 # print(item_features)
-
+print (user_features.toarray().shape)
+print (item_features.toarray().shape)
+print (interactions.toarray().shape)
 # Fit the model for 5 epochs
 model.fit(interactions, user_features, item_features, epochs=100, verbose=True)
 
