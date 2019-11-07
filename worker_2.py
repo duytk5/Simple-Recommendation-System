@@ -6,4 +6,4 @@ time_update = 10
 
 while True:
     print (mo.update())
-    time.sleep(2)
+    time.sleep(time_update)
