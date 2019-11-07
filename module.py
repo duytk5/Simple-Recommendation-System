@@ -46,15 +46,24 @@ class Module:
         return result
 
     def update(self):
-        try:
-            self.fit()
-            matrix = self.get_all()
-            cur = self.connection.cursor()
-            query = (
-                ""
-            )
-            cur.execute(query)
-            cur.close()
-        except:
-            raise Exception("oh shit! error!")
+        self.fit()
+        matrix = self.get_all()
+        cur = self.connection.cursor()
+
+        query = (
+            "TRUNCATE TABLE student_branch"
+        )
+        cur.execute(query)
+        self.connection.commit()
+
+        for i in range(len(matrix)):
+            for j in range(len(matrix[0])):
+                query = (
+                    "INSERT INTO student_branch (student_id, branch_id, ratio) VALUES (%s, %s, %s)"
+                )
+                data = (i,j,float(matrix[i][j]))
+                cur.execute(query, data)
+                self.connection.commit()
+        cur.close()
+
         return matrix
